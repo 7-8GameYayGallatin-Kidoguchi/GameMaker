@@ -109,6 +109,26 @@ else{
 if (xspd!=0 or yspd!=0) movedir = dir+((point_direction(0,0,xspd,yspd)+270)%360);
 if movedir!=-1 facedir=movedir%360;
 
+if state!=3 and state!=2{
+//https://www.reddit.com/r/gamemaker/comments/31d4qx/detecting_multiple_collisions/
+var cnum, ID, num;
+num = instance_number(parent_enemy);
+    for(cnum = 0; cnum &lt;= num; cnum += 1){
+        ID = instance_find(parent_enemy, cnum);
+        if instance_exists(ID){
+            if collision_circle(ID.x+lengthdir_x(16,ID.dir_face),ID.y+lengthdir_y(16,ID.dir_face),16,self,false,false){
+                if(ID.state==1){
+                    state=2;
+                    spritestate=4;
+                    hp-=5;
+                    cooldown=room_speed/4;
+                    movedir=point_direction(ID.x,ID.y,x,y);
+                }
+            }
+        }
+    }
+}
+
 if state==0{ // Movement
     if stamregen!=(room_speed*2) stamregen++;
     if stamregen==(room_speed*2){stamina++;}
@@ -156,6 +176,13 @@ else if state==1{ // Attacking
     if cooldown&gt;0 {cooldown--;}
     else {state=0; }
 }
+else if state==2{ // hit
+    if cooldown&gt;0 {cooldown--;}
+    else {state=0; }
+}
+else if state==3{ // dead
+
+}
 
 
 if spritestate==0{ // Standing
@@ -183,7 +210,10 @@ else if spritestate==2{ // Running
     image_index=soffset+smin;
 }
 else if spritestate==3{ // Attacking
- // N/A
+ // PLACEHOLDER so Aang doesn't vanish
+    sprite_index=s_aangs;
+    image_speed=0;
+    image_index= (((dir-facedir)+300)%360)/45;
 }
 else if spritestate==4{ // Hit
  // N/A

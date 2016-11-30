@@ -176,7 +176,7 @@ else
 draw_set_color(c_black);
 draw_rectangle(960-490,720-64,960-100,720-48,false);
 draw_set_color(make_color_rgb(255*(clamp(abs((o_player.hp/50)-2),0,1)),255*(clamp(o_player.hp/50,0,1)),0));
-draw_rectangle((960*(o_player.hp/100))-488,720-63,960-102,720-50,false);
+if o_player.hp!=0 draw_rectangle(960-(386*(o_player.hp/100))-102,720-63,960-102,720-50,false);
 
 draw_set_color(c_black);
 draw_rectangle(960-540,720-32,960-100,720-8,false);

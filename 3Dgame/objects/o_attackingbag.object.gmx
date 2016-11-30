@@ -69,37 +69,40 @@ windup=0;
             <kind>1</kind>
             <string> if !control.pause{
 
-if state!=3{ // If not dead
+
+if state!=3 { //if not dead
     lean=lerp(lean,0,1/(room_speed/12));
     
+    windup++;
     if windup&gt;room_speed{
-    state=1; lean=-30; //attacking
+        state=1; lean=-30; //attacking
     }
 }
 
-if state==3{ // If state is dying
-    cooldown++;
-    if cooldown&gt;(room_speed/2){
-        instance_destroy();
+if state==0{ //normal movement
+    // face player
+    if distance_to_object(o_player)&lt;192 dir_face=point_direction(x,y,o_player.x,o_player.y);
+    // detect if hit
+    if distance_to_object(o_player)&lt;32 and state==0{ 
+        if o_player.state==1{
+            if collision_circle(o_player.x+lengthdir_x(16,o_player.facedir),o_player.y+lengthdir_y(16,o_player.facedir),16,self,false,false){
+                hp-=10;
+                lean=0;
+                if hp&lt;=0 {state=3; lean=45;}
+                else {state=2; lean=30;}
+                movedir=point_direction(o_player.x,o_player.y,x,y);
+            }
+        }
     }
-    else{
-        var dist = lerp(4,0,(cooldown/(room_speed/2)));
-        x+=lengthdir_x(dist,movedir);
-        y+=lengthdir_y(dist,movedir);
-        image_alpha-=(2/room_speed);
-        lean=lerp(lean,90,1/(room_speed/2));
-    }
-   
 }
-else if state==2{ //If state is hit
+else if state==1{ //attack
     windup=0;
+
+    movedir=point_direction(x,y,o_player.x,o_player.y);
+    if distance_to_object(o_player)&lt;192 dir_face=point_direction(x,y,o_player.x,o_player.y);
     
-}
-else if state==1{ // If state is attacking
-    windup=0;
-
     cooldown++;
-    if cooldown&gt;(room_speed/4){
+    if cooldown&gt;(room_speed/4){ // If the attack animation has played for 1/4 second
         movedir=-1;
         state=0;
         cooldown=0;
@@ -110,37 +113,37 @@ else if state==1{ // If state is attacking
         y+=lengthdir_y(dist,movedir);
     } 
 }
-else if state==0{ // If state is normal movement
-    if distance_to_object(o_player)&lt;192 dir_face=point_direction(x,y,o_player.x,o_player.y);
-    if distance_to_object(o_player)&lt;32 and state==0{ 
-    if o_player.state==1{
-        if collision_circle(o_player.x+lengthdir_x(16,o_player.facedir),o_player.y+lengthdir_y(16,o_player.facedir),16,self,false,false){
-            hp-=10; windup=0;
-            if hp&lt;=0 { state=3; lean=45;}
-            else { state=2; lean=30;}
-            movedir=point_direction(o_player.x,o_player.y,x,y);
-        }
+else if state==2{ //hit
+    windup=0;
+    
+    cooldown++;
+    if cooldown&gt;(room_speed/4){ // If the hit animation has played for 1/4 second
+        movedir=-1;
+        state=0;
+        cooldown=0;
+    }
+    else{
+        var dist = lerp(2,0,(cooldown/(room_speed/4)));
+        x+=lengthdir_x(dist,movedir);
+        y+=lengthdir_y(dist,movedir);
+    } 
+}
+if state==3{ //dead
+    windup=0;
+    
+    cooldown++;
+    if cooldown&gt;(room_speed/2){ // If the hit animation has played for 1/2 second
+        instance_destroy();
+    }
+    else{
+        var dist = lerp(4,0,(cooldown/(room_speed/2)));
+        x+=lengthdir_x(dist,movedir);
+        y+=lengthdir_y(dist,movedir);
+        image_alpha-=(2/room_speed);
+        lean=lerp(lean,90,1/(room_speed/2));
     }
 }
 }
-}
-
-/*if distance_to_object(o_player)&lt;192{
-
-var target_turn = dir_face;
-
-temptarget=point_direction(x,y,o_player.x,o_player.y);
-if ((abs(temptarget-dir_face)) &lt;= (abs(dir_face-temptarget))){
-    target_turn = (temptarget-dir_face);
-}
-else if ((abs(temptarget-dir_face)) &gt; (abs(dir_face-temptarget))){
-    target_turn = (dir_face-temptarget);
-}
-
-//dir_face=0;
-}
-
-dir_face=lerp(dir_face,(dir_face-target_turn),.05)%360;*/
 </string>
           </argument>
         </arguments>
@@ -197,7 +200,14 @@ if state!=3{
     
     draw_set_color(c_white);
     d3d_transform_set_identity();
+    
+    if state==1 draw_set_color(c_red);
+    d3d_transform_add_translation(x, y, z+1);
+    draw_circle(lengthdir_x(16,dir_face),lengthdir_y(16,dir_face),16,true);
+    draw_set_color(c_white);
+    d3d_transform_set_identity();
 }
+
 </string>
           </argument>
         </arguments>
