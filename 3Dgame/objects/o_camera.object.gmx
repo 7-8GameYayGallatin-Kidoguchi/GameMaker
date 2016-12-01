@@ -34,10 +34,8 @@ length=192;
 target_x=o_player.x+lengthdir_x(length,dir_face);
 target_y=o_player.y+lengthdir_y(length,dir_face);
 
-draw_set_color(c_white);
 d3d_start();
-
-d3d_set_fog(true,make_color_rgb(27,3,59),0,512);
+d3d_set_fog(true,c_white,512,4096); //Purple : make_color_rgb(27,3,59)
 d3d_set_hidden(true);
 
 draw_set_alpha_test(true);
@@ -71,8 +69,12 @@ draw_set_alpha_test_ref_value(40);
         dir_face+=gamepad_button_value(control.controltype,gp_shoulderlb)*2;
     }
     else{
-        if keyboard_check(ord('D')) or keyboard_check(ord('E')) dir_face-=1;
-        if keyboard_check(ord('A')) or keyboard_check(ord('Q')) dir_face+=1;
+        if keyboard_check(ord('E')) dir_face-=2;
+        if keyboard_check(ord('Q')) dir_face+=2;
+        
+        if keyboard_check(ord('R')) z+=2;
+        if keyboard_check(ord('F')) z-=2;
+        z=clamp(z,4,128);
     }
     
 if (dir_face&lt;0) dir_face=359;
@@ -93,25 +95,14 @@ else{
     target_y = o_player.y+lengthdir_y(length,dir_face);
 }
 
-/*//This makes blocks in the triangle from the left and right side of the screen to the player translucent. Disabled for now
-//https://www.reddit.com/r/gamemaker/comments/31d4qx/detecting_multiple_collisions/
-var cnum, ID, num;
-num = instance_number(o_wall);
-if(collision_line(x,y,o_player.x,o_player.y,o_wall,false,true)){
-    for(cnum = 0; cnum &lt;= num; cnum += 1){
-        ID = instance_find(o_wall, cnum);
-        if(rectangle_in_triangle(ID.x,ID.y,ID.x+sprite_width,ID.y+sprite_height,
-        o_player.x,o_player.y,
-        o_camera.x+lengthdir_x(view_wview[view_current]/2,dir_face+90),o_camera.y+lengthdir_y(view_wview[view_current]/2,dir_face+90),
-        o_camera.x+lengthdir_x(view_wview[view_current]/2,dir_face-90),o_camera.y+lengthdir_y(view_wview[view_current]/2,dir_face-90))!=0){
-            ID.transp=.25;
-        }
-    }
-}*/
 }
 
 x=lerp(x,target_x,.25);
 y=lerp(y,target_y,.25);
+
+if place_meeting(x,y,parent_wall){
+    with instance_nearest(x,y,parent_wall) { transp=0; }
+}
 </string>
           </argument>
         </arguments>
@@ -134,10 +125,19 @@ y=lerp(y,target_y,.25);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>d3d_set_projection(x,y,z+o_player.z, o_player.x,o_player.y,o_player.z, 0,0,1);
+            <string>draw_set_color(c_white);
+draw_set_alpha(1);
+d3d_set_projection(x,y,z+o_player.z, o_player.x,o_player.y,o_player.z+32, 0,0,1);
 draw_set_color(c_red);
 draw_triangle(o_player.x,o_player.y,lengthdir_x(view_wview[view_current]/2,dir_face+90),lengthdir_y(view_wview[view_current]/2,dir_face+90),lengthdir_x(view_wview[view_current]/2,dir_face+450),lengthdir_y(view_wview[view_current]/2,dir_face+450),true);
 draw_set_color(c_white);
+
+d3d_set_fog(0,0,0,0);
+d3d_draw_cylinder((room_width/2)+12000,(room_height/2)+12000,12000,(room_width/2)-12000,(room_height/2)-12000,-12000,background_get_texture(bg_skyred),3,1,false,24);
+//draw_set_color(make_color_rgb(132,24,57));
+//d3d_draw_floor((room_width/2)+12000,(room_height/2)+12000,12000,(room_width/2)-12000,(room_height/2)-12000,12000,-1,1,1);
+draw_set_color(c_white);
+d3d_set_fog(true,c_white,512,4096);
 </string>
           </argument>
         </arguments>

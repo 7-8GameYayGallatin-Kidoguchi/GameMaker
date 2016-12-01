@@ -29,7 +29,6 @@
 
 z=0;
 dir_face=0;
-target_dir_face=0;
 
 state=0;
     // 0 - normal movement
@@ -37,6 +36,7 @@ state=0;
     // 2 - hit
     // 3 - dead
 movedir=-1;
+distmove=0;
 lean=0;
 
 hp=100;
@@ -69,13 +69,12 @@ windup=0;
             <kind>1</kind>
             <string> if !control.pause{
 
-
 if state!=3 { //if not dead
     lean=lerp(lean,0,1/(room_speed/12));
     
-    windup++;
+    if distance_to_object(o_player)&lt;64 windup++;
     if windup&gt;room_speed{
-        state=1; lean=-30; //attacking
+        state=1; lean=-30; movedist=2; //attacking
     }
 }
 
@@ -88,8 +87,8 @@ if state==0{ //normal movement
             if collision_circle(o_player.x+lengthdir_x(16,o_player.facedir),o_player.y+lengthdir_y(16,o_player.facedir),16,self,false,false){
                 hp-=10;
                 lean=0;
-                if hp&lt;=0 {state=3; lean=45;}
-                else {state=2; lean=30;}
+                if hp&lt;=0 {state=3; lean=45; movedist=4}
+                else {state=2; lean=30; movedist=2;}
                 movedir=point_direction(o_player.x,o_player.y,x,y);
             }
         }
@@ -106,12 +105,8 @@ else if state==1{ //attack
         movedir=-1;
         state=0;
         cooldown=0;
+        movedist=0;
     }
-    else{
-        var dist = lerp(2,0,(cooldown/(room_speed/4)));
-        x+=lengthdir_x(dist,movedir);
-        y+=lengthdir_y(dist,movedir);
-    } 
 }
 else if state==2{ //hit
     windup=0;
@@ -121,12 +116,8 @@ else if state==2{ //hit
         movedir=-1;
         state=0;
         cooldown=0;
+        movedist=0;
     }
-    else{
-        var dist = lerp(2,0,(cooldown/(room_speed/4)));
-        x+=lengthdir_x(dist,movedir);
-        y+=lengthdir_y(dist,movedir);
-    } 
 }
 if state==3{ //dead
     windup=0;
@@ -136,13 +127,51 @@ if state==3{ //dead
         instance_destroy();
     }
     else{
-        var dist = lerp(4,0,(cooldown/(room_speed/2)));
-        x+=lengthdir_x(dist,movedir);
-        y+=lengthdir_y(dist,movedir);
         image_alpha-=(2/room_speed);
         lean=lerp(lean,90,1/(room_speed/2));
     }
 }
+
+//Collision Checking
+if (movedir!=-1){
+    
+    var dist = lerp(movedist,0,(cooldown/(room_speed/(6-movedist))));
+    //x+=lengthdir_x(dist,movedir);
+    //y+=lengthdir_y(dist,movedir);
+                                
+    if lengthdir_y(1,movedir)!=0 {
+        if collision_rectangle(x-8,y-8+lengthdir_y(dist,movedir),x+8,y+8+lengthdir_y(dist,movedir),parent_solid,false,true) or collision_rectangle(x-8,y-8+lengthdir_y(dist,movedir),x+8,y+8+lengthdir_y(dist,movedir),o_player,false,true) {
+            if lengthdir_y(1,movedir)&gt;0 {
+                while (!collision_rectangle(x-8,y-7,x+8,y+9,parent_solid,false,true) and !collision_rectangle(x-8,y-7,x+8,y+9,o_player,false,true)){ 
+                    y++;
+                }
+            }
+            else if lengthdir_y(1,movedir)&lt;0 {
+                while(!collision_rectangle(x-8,y-9,x+8,y+7,parent_solid,false,true) and !collision_rectangle(x-8,y-9,x+8,y+7,o_player,false,true)){
+                    y--;
+                }
+            }
+        }
+        else y+=lengthdir_y(dist,movedir);
+    }
+    
+    if lengthdir_x(1,movedir)!=0 {
+        if collision_rectangle(x-8+lengthdir_x(dist,movedir),y-8,x+8+lengthdir_x(dist,movedir),y+8,parent_solid,false,true) or collision_rectangle(x-8+lengthdir_x(dist,movedir),y-8,x+8+lengthdir_x(dist,movedir),y+8,o_player,false,true) {
+            if lengthdir_x(1,movedir)&gt;0 {
+                while (!collision_rectangle(x-7,y-8,x+9,y+8,parent_solid,false,true) and !collision_rectangle(x-7,y-8,x+9,y+8,o_player,false,true)){ 
+                    x++;
+                }
+            }
+            else if lengthdir_x(1,movedir)&lt;0 {
+                while(!collision_rectangle(x-9,y-8,x+7,y+8,parent_solid,false,true) and !collision_rectangle(x-9,y-8,x+7,y+8,o_player,false,true)){
+                    x--;
+                }
+            }
+        }
+        else x+=lengthdir_x(dist,movedir);
+    }                                    
+}
+
 }
 </string>
           </argument>

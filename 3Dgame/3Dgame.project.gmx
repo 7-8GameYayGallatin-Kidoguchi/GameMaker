@@ -20,17 +20,22 @@
     <sprite>sprites\s_aangs</sprite>
     <sprite>sprites\s_aangw</sprite>
     <sprite>sprites\s_aangr</sprite>
+    <sprite>sprites\s_grass</sprite>
+    <sprite>sprites\s_cliff</sprite>
   </sprites>
-  <backgrounds name="background"/>
+  <backgrounds name="background">
+    <background>background\bg_skyred</background>
+    <background>background\bg_skywhite</background>
+    <background>background\bg_skynight</background>
+  </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\model_punchingbag_create.gml</script>
   </scripts>
   <objects name="objects">
-    <object>objects\parent_solid</object>
+    <object>objects\control</object>
     <object>objects\o_particle_bubbles</object>
     <object>objects\o_particle_slash</object>
-    <object>objects\control</object>
     <object>objects\o_camera</object>
     <object>objects\o_player</object>
     <object>objects\o_npc</object>
@@ -40,6 +45,7 @@
       <object>objects\o_attackingbag</object>
     </objects>
     <objects name="solids">
+      <object>objects\parent_solid</object>
       <object>objects\parent_wall</object>
       <object>objects\o_wall</object>
       <object>objects\o_floor</object>

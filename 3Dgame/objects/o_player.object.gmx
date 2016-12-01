@@ -92,7 +92,7 @@ if control.controltype!=-1{
     yspd=gamepad_axis_value(control.controltype,gp_axislv);
     if gamepad_button_check(controltype, gp_shoulderl) spd=4; else spd=2;
     
-    if (gamepad_button_check(controltype, gp_face2) and cooldown&lt;=0 and stamina!=0) { stamina-=5; stamregen=0; state=1; cooldown=room_speed/8; }
+    if (gamepad_button_check(controltype, gp_face2) and cooldown&lt;=0 and stamina!=0) { stamina-=5; stamina=clamp(stamina,0,100); state=1; cooldown=room_speed/8; }
     
 }
 else{
@@ -102,7 +102,7 @@ else{
     if keyboard_check(ord('A')) xspd--; //Strafe left
     if keyboard_check(vk_shift) spd=4; else spd=2;
     
-    if (mouse_check_button_pressed(mb_left) and cooldown&lt;=0 and stamina!=0) { stamina-=5; stamregen=0; state=1; cooldown=room_speed/8; }
+    if (mouse_check_button_pressed(mb_left) and cooldown&lt;=0 and stamina!=0) { stamina-=5; stamina=clamp(stamina,0,100); state=1; cooldown=room_speed/8; }
     
 }
 
@@ -110,6 +110,7 @@ if (xspd!=0 or yspd!=0) movedir = dir+((point_direction(0,0,xspd,yspd)+270)%360)
 if movedir!=-1 facedir=movedir%360;
 
 if state!=3 and state!=2{
+//Check through all enemies for being attacked
 //https://www.reddit.com/r/gamemaker/comments/31d4qx/detecting_multiple_collisions/
 var cnum, ID, num;
 num = instance_number(parent_enemy);
@@ -121,6 +122,7 @@ num = instance_number(parent_enemy);
                     state=2;
                     spritestate=4;
                     hp-=5;
+                    hp=clamp(hp,0,100);
                     cooldown=room_speed/4;
                     movedir=point_direction(ID.x,ID.y,x,y);
                 }
@@ -131,8 +133,12 @@ num = instance_number(parent_enemy);
 
 if state==0{ // Movement
     if stamregen!=(room_speed*2) stamregen++;
-    if stamregen==(room_speed*2){stamina++;}
+    if stamregen==(room_speed*2) stamina++;
     stamina=clamp(stamina,0,100);
+    
+    if hpregen!=(room_speed*4) hpregen++;
+    if hpregen==(room_speed*4) hp+=.15;
+    hp=clamp(hp,0,100);
     
     //Collisions
     if (movedir!=-1){
@@ -173,15 +179,20 @@ if state==0{ // Movement
     } else spritestate=0;
 }
 else if state==1{ // Attacking
+    hpregen=0;
+    stamregen=0;
     if cooldown&gt;0 {cooldown--;}
     else {state=0; }
 }
 else if state==2{ // hit
+    hpregen=0;
+    stamregen=0;
     if cooldown&gt;0 {cooldown--;}
     else {state=0; }
 }
 else if state==3{ // dead
-
+    hpregen=0;
+    stamregen=0;
 }
 
 

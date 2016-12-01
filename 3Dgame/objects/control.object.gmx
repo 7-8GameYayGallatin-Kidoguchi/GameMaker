@@ -33,6 +33,8 @@ controltype=-1;
 //-1 is keyboard and anything else is a gamepad usb index
 
 draw_set_valign(fa_center);
+
+staminashake=0;
 </string>
           </argument>
         </arguments>
@@ -169,23 +171,62 @@ if gamepad_is_connected(controltype)
     }
 else
     {
-    draw_text(32, 32, "Keyboard &amp; Mouse Input");
+    draw_text(32, 32, "FPS "+string(fps));
+    draw_text(32, 32+20, "FPS Max "+string(fps_real));
+    draw_text(32, 32+40, "Keyboard &amp; Mouse Input");
     //draw_text(32, 32 + 20, "Gamepad not connected" + string(gamepad_get_description(controltype)));
     }
 
+//Black Backdrop
 draw_set_color(c_black);
-draw_rectangle(960-490,720-64,960-100,720-48,false);
-draw_set_color(make_color_rgb(255*(clamp(abs((o_player.hp/50)-2),0,1)),255*(clamp(o_player.hp/50,0,1)),0));
-if o_player.hp!=0 draw_rectangle(960-(386*(o_player.hp/100))-102,720-63,960-102,720-50,false);
+draw_rectangle(960-508,720-82,960,720,false);
+draw_triangle(960-508,720-82,960-508,720-60,960-558,720-60,false);
+draw_rectangle(960-558,720-60,960-500,720,false);
+draw_set_circle_precision(50);
+draw_circle(960-24,720,140,false);
+draw_set_circle_precision(24);
+draw_rectangle(960-24,720,960,720-140,false);
 
-draw_set_color(c_black);
-draw_rectangle(960-540,720-32,960-100,720-8,false);
-draw_set_color(make_color_rgb(0,255*(o_player.stamina/100),255));
-if o_player.stamina!=0 draw_rectangle(960-(436*(o_player.stamina/100))-102,720-30,960-102,720-10,false);
+var shake=0;
+//Health Bar
+if o_player.hpregen&gt;=(room_speed*4){ //If health is regenerating
+    draw_set_color(make_color_rgb(abs(255-255*(o_player.hp/100)),abs(255-255*(o_player.hp/100)),abs(255-255*(o_player.hp/100)))); // Black to white
+    draw_rectangle(960-488,720-62,960-102,720-50,true); // Border directly under the health bar
+}
+else if o_player.state==2{ //If player is hit (looses hp)
+    draw_set_color(make_color_rgb(abs(255-(255*(o_player.hp/100))),0,0)); // black to red
+    var shake=+random_range(-(abs(100-100*(o_player.hp/100))/40),(abs(100-100*(o_player.hp/100))/40));
+    draw_rectangle(960-488+shake,720-62+shake,960-102+shake,720-50+shake,true); // Border directly under the health bar, apply a randomized shift in the bar to make a shake effect
+}
 
+draw_set_color(make_color_rgb(255*(clamp(abs((o_player.hp/50)-2),0,1)),255*(clamp(o_player.hp/50,0,1)),0)); // Green to red
+if o_player.hp&gt;0 draw_rectangle(960-(386*(o_player.hp/100))-102+shake,720-62+shake,960-102+shake,720-50+shake,false); // Health bar
+
+//Stam Bar
+if o_player.stamregen&gt;=(room_speed*2){ // If stamina is regenerating
+    draw_set_color(make_color_rgb(abs(255-255*(o_player.stamina/100)),abs(255-255*(o_player.stamina/100)),abs(255-255*(o_player.stamina/100)))); // Black to white
+    draw_rectangle(960-538,720-40,960-102,720-20,true); // Border directly under the stamina bar
+}
+if o_player.state==1{ // If player attacks (uses stamina)
+    draw_set_color(make_color_rgb(abs(255-(255*(o_player.stamina/100))),0,0)); // black to red
+    draw_rectangle(960-538,720-40,960-102,720-20,true); // Border directly under the stamina bar
+}
+else if mouse_check_button_pressed(mb_left) and o_player.stamina==0 staminashake++; // Try to attack with no stamina
+if staminashake&gt;(room_speed/4) staminashake=0;
+else if staminashake&gt;0 and o_player.stamina&lt;200 {
+    staminashake++;
+    //draw_set_color(c_red);
+    draw_set_color(make_color_rgb(abs(255-255*(o_player.stamregen/120)),0,0)); // red to black
+    var shake=+random_range(-2,2);
+    draw_rectangle(960-538+shake,720-40+shake,960-102+shake,720-20+shake,false); //Apply a randomized shift in the bar to make a shake effect
+}
+
+draw_set_color(make_color_rgb(0,255*(o_player.stamina/100),255)); // Cyan to royal blue
+if o_player.stamina&gt;0 draw_rectangle(960-(436*(o_player.stamina/100))-102,720-40,960-102,720-20,false); // Stamina
+
+//Aang head
 draw_set_color(c_white);
 draw_sprite(s_hudaang,0,960,720);
-
 </string>
           </argument>
         </arguments>
