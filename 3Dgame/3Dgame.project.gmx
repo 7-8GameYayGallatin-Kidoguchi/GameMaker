@@ -32,6 +32,9 @@
   <scripts name="scripts">
     <script>scripts\model_punchingbag_create.gml</script>
   </scripts>
+  <fonts name="fonts">
+    <font>fonts\ft_def</font>
+  </fonts>
   <objects name="objects">
     <object>objects\control</object>
     <object>objects\o_particle_bubbles</object>
@@ -50,6 +53,7 @@
       <object>objects\o_wall</object>
       <object>objects\o_floor</object>
     </objects>
+    <object>objects\control_new</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\test</room>
