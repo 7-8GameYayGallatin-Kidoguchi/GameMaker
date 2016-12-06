@@ -28,11 +28,17 @@
             <string>z=64;
 
 dir_face=0;
-
 length=192;
 
 target_x=o_player.x+lengthdir_x(length,dir_face);
 target_y=o_player.y+lengthdir_y(length,dir_face);
+
+cameramode=0;
+    // 0 - free camera
+    // 1 - follow camera
+    // 2 - targetting camera
+targetobj=o_player;
+
 
 d3d_start();
 d3d_set_fog(true,c_white,512,4096); //Purple : make_color_rgb(27,3,59)
@@ -64,23 +70,40 @@ draw_set_alpha_test_ref_value(40);
             <kind>1</kind>
             <string>if !control.pause {
 
+//Distance in 3D space formula
+// d=√((x1−x0)^2+(y1−y0)^2+(z1−z0)^2)
+
     if control.controltype!=-1{
         dir_face-=gamepad_button_value(control.controltype,gp_shoulderrb)*2;
         dir_face+=gamepad_button_value(control.controltype,gp_shoulderlb)*2;
     }
     else{
-        if keyboard_check(ord('E')) dir_face-=2;
-        if keyboard_check(ord('Q')) dir_face+=2;
+        if keyboard_check(vk_space) cameramode=2
+        else if o_player.movedir!=-1 cameramode=1
+        else cameramode=0
         
-        if keyboard_check(ord('R')) z+=2;
-        if keyboard_check(ord('F')) z-=2;
-        z=clamp(z,4,128);
+        if cameramode==0{ //Free camera, freely move camera
+            if keyboard_check(ord('E')) dir_face-=2;
+            if keyboard_check(ord('Q')) dir_face+=2;
+            
+            if keyboard_check(ord('R')) z+=2;
+            if keyboard_check(ord('F')) z-=2;
+            z=clamp(z,4,128);
+        }
+        else if cameramode==1{ //Follow camera, follows player
+            if keyboard_check(ord('D')) dir_face-=1.5;
+            if keyboard_check(ord('A')) dir_face+=1.5;
+        }
+        else if cameramode==2{ //Target camera, targets direction or enemy
+        
+        
+        }
     }
     
 if (dir_face&lt;0) dir_face=359;
 dir_face= dir_face%360;
 
-if collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(length,dir_face),o_player.y+lengthdir_y(length,dir_face),parent_wall,false,true){
+if collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(length,dir_face),o_player.y+lengthdir_y(length,dir_face),parent_wall,false,true) and z&lt;=64{
     show_debug_message("solid");
     var testlength=192;
     while (collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(testlength,dir_face),o_player.y+lengthdir_y(testlength,dir_face),parent_wall,false,true)){

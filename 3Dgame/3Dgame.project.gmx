@@ -38,7 +38,6 @@
   <objects name="objects">
     <object>objects\control</object>
     <object>objects\o_particle_bubbles</object>
-    <object>objects\o_particle_slash</object>
     <object>objects\o_camera</object>
     <object>objects\o_player</object>
     <object>objects\o_npc</object>
@@ -55,6 +54,7 @@
     </objects>
   </objects>
   <rooms name="rooms">
+    <room>rooms\enemypathfindingtest</room>
     <room>rooms\test</room>
   </rooms>
   <help>

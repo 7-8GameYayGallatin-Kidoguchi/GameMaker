@@ -30,6 +30,7 @@ y=y;
 z=0;
 
 facedir=0;
+movedir=-1;
 spd=2;
 
 stamina=100;
@@ -85,7 +86,7 @@ var dir=(o_camera.dir_face+180)%360; //Direction away from camera
 //Movement
 var xspd = 0;
 var yspd = 0;
-var movedir=-1;
+movedir=-1;
 
 if control.controltype!=-1{
     xspd=gamepad_axis_value(control.controltype,gp_axislh);
@@ -117,7 +118,7 @@ num = instance_number(parent_enemy);
     for(cnum = 0; cnum &lt;= num; cnum += 1){
         ID = instance_find(parent_enemy, cnum);
         if instance_exists(ID){
-            if collision_circle(ID.x+lengthdir_x(16,ID.dir_face),ID.y+lengthdir_y(16,ID.dir_face),16,self,false,false){
+            if collision_circle(ID.x+lengthdir_x(16,ID.dir_face),ID.y+lengthdir_y(16,ID.dir_face),32,self,false,false){
                 if(ID.state==1){
                     state=2;
                     spritestate=4;
@@ -131,15 +132,15 @@ num = instance_number(parent_enemy);
     }
 }
 
-if state==0{ // Movement
-    if stamregen!=(room_speed*2) stamregen++;
+if stamregen!=(room_speed*2) stamregen++;
     if stamregen==(room_speed*2) stamina++;
     stamina=clamp(stamina,0,100);
     
     if hpregen!=(room_speed*4) hpregen++;
     if hpregen==(room_speed*4) hp+=.15;
     hp=clamp(hp,0,100);
-    
+
+if state==0{ // Movement   
     //Collisions
     if (movedir!=-1){
         
@@ -179,14 +180,12 @@ if state==0{ // Movement
     } else spritestate=0;
 }
 else if state==1{ // Attacking
-    hpregen=0;
     stamregen=0;
     if cooldown&gt;0 {cooldown--;}
     else {state=0; }
 }
 else if state==2{ // hit
     hpregen=0;
-    stamregen=0;
     if cooldown&gt;0 {cooldown--;}
     else {state=0; }
 }
