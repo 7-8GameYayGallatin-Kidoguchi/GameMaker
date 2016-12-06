@@ -27,6 +27,7 @@
             <kind>1</kind>
             <string>pause=0;
 pausechoice=0;
+continues=3;
 
 model_punchingbag_create();
 
@@ -58,7 +59,11 @@ staminashake=0;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if keyboard_check_pressed(vk_escape){ pause++; if pause==2 pause=0;
+            <string>//if player is dead
+if o_player.hp == 0{
+    pause = true;
+}
+if keyboard_check_pressed(vk_escape) and o_player.hp!=0{ pause++; if pause==2 pause=0;
     if pause==1 {
   //      instance_deactivate_all(true);
     }
@@ -73,17 +78,34 @@ else {
     //only three options right now
     if pausechoice == 0 { pausechoice=3};
     if pausechoice == 4 { pausechoice=1};
+    if o_player.hp == 0 and pausechoice==3 { pausechoice=1};//remove one choice when dead
+    if continues &lt; 0 { pausechoice=1};
     }
+
 }
 if keyboard_check_pressed(vk_enter){
     if pausechoice == 1 {
-        game_end();
-    }
-    if pausechoice == 2 {
         pause=0;
     }
-    if pausechoice == 3 {
+    if pausechoice == 2 {
         //control menu
+    }
+    if pausechoice == 3 {
+        game_end();
+    }
+    if o_player.hp == 0{
+        if continues &gt;= 0{
+            if pausechoice == 1 {
+                o_player.hp = 50;
+                pause=0;
+                continues--;
+            }
+            if pausechoice == 2 {
+                game_end();
+            }
+        }
+        else
+            game_end();
     }
 }
 </string>
@@ -154,38 +176,75 @@ if pause==true {
     draw_set_color(c_black);
     draw_set_alpha(.5);
     draw_rectangle(0,0,960,720,false);
+    if o_player.hp != 0 {
+        draw_set_color(c_white);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        draw_text_transformed(960/2, 720/2-100, "Paused", 1, 1, 0);
+        
+        draw_set_color(c_white);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        if pausechoice == 1{draw_text_transformed(960/2  +0, 720/2-50, "Resume", 1, 1, 0);}
+        else {
+            draw_text_transformed(960/2  +0, 720/2-50, "Resume", .75, .75, 0);
+        }
     
-    draw_set_color(c_white);
-    draw_set_alpha(1);
-    draw_set_halign(fa_center);
-    //draw_text(960/2+25,720/2-75,"Paused");
-    draw_text_transformed(960/2, 720/2-100, "Paused", 1, 1, 0);
-    
-    draw_set_color(c_white);
-    draw_set_alpha(1);
-    draw_set_halign(fa_center);
-    //draw_text(960/2+10,720/2-25,"Quit");
-    if pausechoice == 1{draw_text_transformed(960/2  +0, 720/2-50, "Quit", 1, 1, 0);}
-    else {
-        draw_text_transformed(960/2  +0, 720/2-50, "Quit", .75, .75, 0);
+        draw_set_color(c_white);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        if pausechoice == 2{draw_text_transformed(960/2  +0, 720/2-25, "Controls", 1, 1, 0);}
+        else {
+            draw_text_transformed(960/2  +0, 720/2-25, "Controls", .75, .75, 0);
+        }
+        
+        draw_set_color(c_white);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        if pausechoice == 3{draw_text_transformed(960/2  +0, 720/2-0, "Quit", 1, 1, 0);}
+        else {
+            draw_text_transformed(960/2  +0, 720/2-0, "Quit", .75, .75, 0);
+        }
     }
+    if o_player.hp &lt;= 0 and continues &gt;= 0{//if player is dead
+    draw_set_color(c_red);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        //draw_text(960/2+25,720/2-75,"DEAD");
+        draw_text_transformed(960/2, 720/2-100, "DEAD " + string(continues) + " Continues left", 1, 1, 0);
     
-    draw_set_color(c_white);
-    draw_set_alpha(1);
-    draw_set_halign(fa_center);
-    //draw_text(960/2+10,720/2-25,"Resume);
-    if pausechoice == 2{draw_text_transformed(960/2  +0, 720/2-25, "Resume", 1, 1, 0);}
-    else {
-        draw_text_transformed(960/2  +0, 720/2-25, "Resume", .75, .75, 0);
+    draw_set_color(c_red);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        //draw_text(960/2+10,720/2-25,"Continue?");
+        if pausechoice == 1{draw_text_transformed(960/2  +0, 720/2-50, "Continue?", 1, 1, 0);}
+        else {
+            draw_text_transformed(960/2  +0, 720/2-50, "Continue?", .75, .75, 0);
+        }
+    draw_set_color(c_red);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        //draw_text(960/2+10,720/2-25,"Quit");
+        if pausechoice == 2{draw_text_transformed(960/2  +0, 720/2-25, "Quit", 1, 1, 0);}
+        else {
+            draw_text_transformed(960/2  +0, 720/2-25, "Quit", .75, .75, 0);
+        }
     }
-    
-    draw_set_color(c_white);
-    draw_set_alpha(1);
-    draw_set_halign(fa_center);
-    //draw_text(960/2+10,720/2-25,"Controls);
-    if pausechoice == 3{draw_text_transformed(960/2  +0, 720/2-0, "Controls", 1, 1, 0);}
-    else {
-        draw_text_transformed(960/2  +0, 720/2-0, "Controls", .75, .75, 0);
+    else//no more continues
+    {
+        draw_set_color(c_red);
+        draw_set_alpha(1);
+        draw_set_halign(fa_center);
+        //draw_text(960/2+25,720/2-75,"DEAD");
+        draw_text_transformed(960/2, 720/2-100, "DEAD", 1, 1, 0);
+        draw_set_color(c_red);
+            draw_set_alpha(1);
+            draw_set_halign(fa_center);
+            //draw_text(960/2+10,720/2-25,"Quit");
+            if pausechoice == 1{draw_text_transformed(960/2  +0, 720/2-50, "Quit", 1, 1, 0);}
+            else {
+                draw_text_transformed(960/2  +0, 720/2-50, "Quit", .75, .75, 0);
+            }
     }
 }
 
