@@ -20,13 +20,13 @@
   <width>64</width>
   <height>64</height>
   <frames>
-    <frame index="0">images\s_aangs_0.png</frame>
-    <frame index="1">images\s_aangs_1.png</frame>
-    <frame index="2">images\s_aangs_2.png</frame>
-    <frame index="3">images\s_aangs_3.png</frame>
-    <frame index="4">images\s_aangs_4.png</frame>
-    <frame index="5">images\s_aangs_5.png</frame>
-    <frame index="6">images\s_aangs_6.png</frame>
-    <frame index="7">images\s_aangs_7.png</frame>
+    <frame index="0">images\s_aangstand_0.png</frame>
+    <frame index="1">images\s_aangstand_1.png</frame>
+    <frame index="2">images\s_aangstand_2.png</frame>
+    <frame index="3">images\s_aangstand_3.png</frame>
+    <frame index="4">images\s_aangstand_4.png</frame>
+    <frame index="5">images\s_aangstand_5.png</frame>
+    <frame index="6">images\s_aangstand_6.png</frame>
+    <frame index="7">images\s_aangstand_7.png</frame>
   </frames>
 </sprite>

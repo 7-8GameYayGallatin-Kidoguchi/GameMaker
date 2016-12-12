@@ -17,9 +17,13 @@
     <sprite>sprites\s_face</sprite>
     <sprite>sprites\s_red</sprite>
     <sprite>sprites\s_hudaang</sprite>
-    <sprite>sprites\s_aangs</sprite>
-    <sprite>sprites\s_aangw</sprite>
-    <sprite>sprites\s_aangr</sprite>
+    <sprite>sprites\s_aangstand</sprite>
+    <sprite>sprites\s_aangstance</sprite>
+    <sprite>sprites\s_aangblock</sprite>
+    <sprite>sprites\s_aangwalk</sprite>
+    <sprite>sprites\s_aangrun</sprite>
+    <sprite>sprites\s_aanghit</sprite>
+    <sprite>sprites\s_aangdie</sprite>
     <sprite>sprites\s_grass</sprite>
     <sprite>sprites\s_cliff</sprite>
   </sprites>
@@ -34,6 +38,7 @@
   </scripts>
   <fonts name="fonts">
     <font>fonts\ft_def</font>
+    <font>fonts\ft_debug</font>
   </fonts>
   <objects name="objects">
     <object>objects\control</object>
@@ -47,6 +52,7 @@
       <object>objects\o_attackingbag</object>
     </objects>
     <objects name="solids">
+      <object>objects\parent_solid_pathfinding</object>
       <object>objects\parent_solid</object>
       <object>objects\parent_wall</object>
       <object>objects\o_wall</object>

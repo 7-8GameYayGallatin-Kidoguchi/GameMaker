@@ -59,7 +59,7 @@ target_dir=0;
 if !control.pause{ //If the game isn't paused
 var camera_dir = point_direction(x,y,o_camera.x,o_camera.y);
 
-image_index= (((o_camera.dir_face+180-dir+270)%360)/45); // Calculate the image index based off the camera direction and the direction the npc is facing
+image_index= (((o_camera.yaw+180-dir+270)%360)/45); // Calculate the image index based off the camera direction and the direction the npc is facing
 }
 </string>
           </argument>

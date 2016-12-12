@@ -31,6 +31,9 @@ continues=3;
 
 model_punchingbag_create();
 
+mpgrid=mp_grid_create(0,0,room_width/8,room_height/8,8,8);
+mp_grid_add_instances(mpgrid,parent_solid_pathfinding,true);
+
 controltype=-1;
 //-1 is keyboard and anything else is a gamepad usb index
 
@@ -248,6 +251,7 @@ if pause==true {
     }
 }
 
+draw_set_font(ft_debug);
 draw_set_halign(fa_left);
 draw_set_color(c_white);
 if gamepad_is_connected(controltype)
@@ -337,6 +341,13 @@ if o_player.stamina&gt;0 draw_rectangle(960-(436*(o_player.stamina/100))-102,720
 //Aang head
 draw_set_color(c_white);
 draw_sprite(s_hudaang,0,960,720);
+
+//Camera mode
+draw_set_halign(fa_right);
+if o_camera.cameramode==0 draw_text(960-140,720-100,"Free");
+else if o_camera.cameramode==1 draw_text(960-140,720-100,"Follow");
+else if o_camera.cameramode==2 draw_text(960-140,720-100,"Target");
+draw_set_halign(fa_left);
 </string>
           </argument>
         </arguments>

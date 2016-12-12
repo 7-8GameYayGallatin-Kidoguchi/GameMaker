@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>parent_solid</parentName>
+  <parentName>parent_solid_pathfinding</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>transp=1;
+            <string>///Camera will collide with these objects
 </string>
           </argument>
         </arguments>

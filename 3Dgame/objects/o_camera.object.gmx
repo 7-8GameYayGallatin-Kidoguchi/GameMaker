@@ -27,18 +27,18 @@
             <kind>1</kind>
             <string>z=64;
 
-dir_face=0;
+yaw=0; //horizontal
+pitch=0; //vertical
 length=192;
 
-target_x=o_player.x+lengthdir_x(length,dir_face);
-target_y=o_player.y+lengthdir_y(length,dir_face);
+target_x=o_player.x+lengthdir_x(length,yaw);
+target_y=o_player.y+lengthdir_y(length,yaw);
 
 cameramode=0;
     // 0 - free camera
     // 1 - follow camera
     // 2 - targetting camera
 targetobj=o_player;
-
 
 d3d_start();
 d3d_set_fog(true,c_white,512,4096); //Purple : make_color_rgb(27,3,59)
@@ -74,8 +74,8 @@ draw_set_alpha_test_ref_value(40);
 // d=√((x1−x0)^2+(y1−y0)^2+(z1−z0)^2)
 
     if control.controltype!=-1{
-        dir_face-=gamepad_button_value(control.controltype,gp_shoulderrb)*2;
-        dir_face+=gamepad_button_value(control.controltype,gp_shoulderlb)*2;
+        yaw-=gamepad_button_value(control.controltype,gp_shoulderrb)*2;
+        yaw+=gamepad_button_value(control.controltype,gp_shoulderlb)*2;
     }
     else{
         if keyboard_check(vk_space) cameramode=2
@@ -83,16 +83,21 @@ draw_set_alpha_test_ref_value(40);
         else cameramode=0
         
         if cameramode==0{ //Free camera, freely move camera
-            if keyboard_check(ord('E')) dir_face-=2;
-            if keyboard_check(ord('Q')) dir_face+=2;
+            if keyboard_check(ord('E')) yaw-=2;
+            if keyboard_check(ord('Q')) yaw+=2;
             
-            if keyboard_check(ord('R')) z+=2;
-            if keyboard_check(ord('F')) z-=2;
-            z=clamp(z,4,128);
+            if keyboard_check(ord('F')) pitch+=2;
+            if keyboard_check(ord('R')) pitch-=2;
+            pitch=clamp(pitch,-20,15);
+            
+            length=lengthdir_x(192,pitch);
+            z=lengthdir_y(192,pitch)+64;
+            
+            
         }
         else if cameramode==1{ //Follow camera, follows player
-            if keyboard_check(ord('D')) dir_face-=1.5;
-            if keyboard_check(ord('A')) dir_face+=1.5;
+            if keyboard_check(ord('D')) yaw-=1.5;
+            if keyboard_check(ord('A')) yaw+=1.5;
         }
         else if cameramode==2{ //Target camera, targets direction or enemy
         
@@ -100,32 +105,28 @@ draw_set_alpha_test_ref_value(40);
         }
     }
     
-if (dir_face&lt;0) dir_face=359;
-dir_face= dir_face%360;
+if (yaw&lt;0) yaw=359;
+yaw= yaw%360;
 
-if collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(length,dir_face),o_player.y+lengthdir_y(length,dir_face),parent_wall,false,true) and z&lt;=64{
+if collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(length,yaw),o_player.y+lengthdir_y(length,yaw),parent_wall,false,true) and z&lt;=64{
     show_debug_message("solid");
     var testlength=192;
-    while (collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(testlength,dir_face),o_player.y+lengthdir_y(testlength,dir_face),parent_wall,false,true)){
+    while (collision_line(o_player.x,o_player.y,o_player.x+lengthdir_x(testlength,yaw),o_player.y+lengthdir_y(testlength,yaw),parent_wall,false,true)){
         testlength--;
         if testlength&lt;0{show_debug_message("infinite loop"); testlength=192; break; }
     }
-    target_x = o_player.x+lengthdir_x(testlength-4,dir_face);
-    target_y = o_player.y+lengthdir_y(testlength-4,dir_face);
+    target_x = o_player.x+lengthdir_x(testlength-4,yaw);
+    target_y = o_player.y+lengthdir_y(testlength-4,yaw);
 }
 else{
-    target_x = o_player.x+lengthdir_x(length,dir_face);
-    target_y = o_player.y+lengthdir_y(length,dir_face);
+    target_x = o_player.x+lengthdir_x(length,yaw);
+    target_y = o_player.y+lengthdir_y(length,yaw);
 }
 
 }
 
 x=lerp(x,target_x,.25);
 y=lerp(y,target_y,.25);
-
-if place_meeting(x,y,parent_wall){
-    with instance_nearest(x,y,parent_wall) { transp=0; }
-}
 </string>
           </argument>
         </arguments>
@@ -152,11 +153,11 @@ if place_meeting(x,y,parent_wall){
 draw_set_alpha(1);
 d3d_set_projection(x,y,z+o_player.z, o_player.x,o_player.y,o_player.z+32, 0,0,1);
 draw_set_color(c_red);
-draw_triangle(o_player.x,o_player.y,lengthdir_x(view_wview[view_current]/2,dir_face+90),lengthdir_y(view_wview[view_current]/2,dir_face+90),lengthdir_x(view_wview[view_current]/2,dir_face+450),lengthdir_y(view_wview[view_current]/2,dir_face+450),true);
+draw_triangle(o_player.x,o_player.y,lengthdir_x(view_wview[view_current]/2,yaw+90),lengthdir_y(view_wview[view_current]/2,yaw+90),lengthdir_x(view_wview[view_current]/2,yaw+450),lengthdir_y(view_wview[view_current]/2,yaw+450),true);
 draw_set_color(c_white);
 
 d3d_set_fog(0,0,0,0);
-d3d_draw_cylinder((room_width/2)+12000,(room_height/2)+12000,12000,(room_width/2)-12000,(room_height/2)-12000,-12000,background_get_texture(bg_skyred),3,1,false,24);
+d3d_draw_cylinder((room_width/2)+12000,(room_height/2)+12000,12000,(room_width/2)-12000,(room_height/2)-12000,-12000,background_get_texture(bg_skywhite),3,1,false,24);
 //draw_set_color(make_color_rgb(132,24,57));
 //d3d_draw_floor((room_width/2)+12000,(room_height/2)+12000,12000,(room_width/2)-12000,(room_height/2)-12000,12000,-1,1,1);
 draw_set_color(c_white);

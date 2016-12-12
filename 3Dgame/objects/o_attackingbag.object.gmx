@@ -96,7 +96,12 @@ windup=0;
             <kind>1</kind>
             <string> if !control.pause{
 
-var canSee=!collision_line(x,x,o_player.x,o_player.y,parent_solid,false,true);
+var canSee=!collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true);
+show_debug_message(collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true));
+if keyboard_check(vk_backspace) {
+    if instance_exists(collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true)) 
+    with (collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true)) { instance_destroy(); }
+}
  
 if state!=3 { //if not dead
     lean=lerp(lean,0,1/(room_speed/12));
@@ -281,7 +286,7 @@ if state!=3{
     
     draw_set_color(make_color_rgb(255*(clamp(abs((hp/50)-2),0,1)),255*(clamp(hp/50,0,1)),0));
     
-    d3d_transform_add_translation(lengthdir_x(1,o_camera.dir_face), lengthdir_y(1,o_camera.dir_face), 0);
+    d3d_transform_add_translation(lengthdir_x(1,o_camera.yaw), lengthdir_y(1,o_camera.yaw), 0);
     
     draw_rectangle(-8,0,(16*(hp/100))-8,2,false); //Health
     
@@ -295,7 +300,7 @@ if state!=3{
     if state==1 draw_set_color(c_red);
     d3d_transform_add_translation(0, 0, 1);
     draw_set_color(c_white);
-    if collision_line(o_player.x,o_player.y,x,x,parent_solid,false,true) draw_set_color(c_red);
+    if collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,true,true) draw_set_color(c_red);
     draw_line(x,y,o_player.x,o_player.y);
     draw_set_color(c_white);
     draw_path(mppath,x,y,false);

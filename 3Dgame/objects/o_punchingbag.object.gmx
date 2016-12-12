@@ -197,7 +197,7 @@ if state!=3{
     
     draw_set_color(make_color_rgb(255*(clamp(abs((hp/50)-2),0,1)),255*(clamp(hp/50,0,1)),0));
     
-    d3d_transform_add_translation(lengthdir_x(1,o_camera.dir_face), lengthdir_y(1,o_camera.dir_face), 0);
+    d3d_transform_add_translation(lengthdir_x(1,o_camera.yaw), lengthdir_y(1,o_camera.yaw), 0);
     
     draw_rectangle(-8,0,(16*(hp/100))-8,2,false);
     
