@@ -196,12 +196,12 @@ else if state==3{ // dead
 
 
 if spritestate==0{ // Standing
-    sprite_index=s_aangs;
+    sprite_index=s_aangstand;
     image_speed=0;
     image_index= (((dir-facedir)+300)%360)/45;
 }
 else if spritestate==1{ // Walking
-    sprite_index=s_aangw;
+    sprite_index=s_aangwalk;
     
     soffset+=(6/room_speed); //I calculate the frame to use by hand so that when the sprite changes to running or a new angle
     if (soffset&gt;=8) soffset=0; // Then you're still aways putting the same foot forward
@@ -211,7 +211,7 @@ else if spritestate==1{ // Walking
     
 }
 else if spritestate==2{ // Running
-    sprite_index=s_aangr;
+    sprite_index=s_aangrun;
     
     soffset+=(8/room_speed);
     if (soffset&gt;=8) soffset=0;
@@ -221,7 +221,7 @@ else if spritestate==2{ // Running
 }
 else if spritestate==3{ // Attacking
  // PLACEHOLDER so Aang doesn't vanish
-    sprite_index=s_aangs;
+    sprite_index=s_aangstand;
     image_speed=0;
     image_index= (((dir-facedir)+300)%360)/45;
 }

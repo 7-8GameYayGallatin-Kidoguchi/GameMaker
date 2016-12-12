@@ -233,7 +233,8 @@ if pause==true {
             draw_text_transformed(960/2  +0, 720/2-25, "Quit", .75, .75, 0);
         }
     }
-    else//no more continues
+    
+    if o_player.hp &lt;= 0 and continues &lt; 0{//if player is dead and can't continue
     {
         draw_set_color(c_red);
         draw_set_alpha(1);
@@ -248,6 +249,7 @@ if pause==true {
             else {
                 draw_text_transformed(960/2  +0, 720/2-50, "Quit", .75, .75, 0);
             }
+    }
     }
 }
 
@@ -348,6 +350,7 @@ if o_camera.cameramode==0 draw_text(960-140,720-100,"Free");
 else if o_camera.cameramode==1 draw_text(960-140,720-100,"Follow");
 else if o_camera.cameramode==2 draw_text(960-140,720-100,"Target");
 draw_set_halign(fa_left);
+
 </string>
           </argument>
         </arguments>
