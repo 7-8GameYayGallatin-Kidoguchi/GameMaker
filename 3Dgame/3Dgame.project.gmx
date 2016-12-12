@@ -16,14 +16,17 @@
     <sprite>sprites\s_edgew</sprite>
     <sprite>sprites\s_face</sprite>
     <sprite>sprites\s_red</sprite>
-    <sprite>sprites\s_hudaang</sprite>
-    <sprite>sprites\s_aangstand</sprite>
-    <sprite>sprites\s_aangstance</sprite>
-    <sprite>sprites\s_aangblock</sprite>
-    <sprite>sprites\s_aangwalk</sprite>
-    <sprite>sprites\s_aangrun</sprite>
-    <sprite>sprites\s_aanghit</sprite>
-    <sprite>sprites\s_aangdie</sprite>
+    <sprites name="placeholder sprites (aang)">
+      <sprite>sprites\s_hudaang</sprite>
+      <sprite>sprites\s_aangstand</sprite>
+      <sprite>sprites\s_aangstance</sprite>
+      <sprite>sprites\s_aangwalk</sprite>
+      <sprite>sprites\s_aangblock</sprite>
+      <sprite>sprites\s_aangrun</sprite>
+      <sprite>sprites\s_aangdie</sprite>
+      <sprite>sprites\s_aanggetup</sprite>
+      <sprite>sprites\s_aanghit</sprite>
+    </sprites>
     <sprite>sprites\s_grass</sprite>
     <sprite>sprites\s_cliff</sprite>
   </sprites>
