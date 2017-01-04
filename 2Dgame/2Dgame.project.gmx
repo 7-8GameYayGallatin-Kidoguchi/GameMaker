@@ -7,12 +7,9 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\s_playercol</sprite>
-    <sprite>sprites\s_player</sprite>
-    <sprite>sprites\s_npc</sprite>
+    <sprite>sprites\s_enemy</sprite>
     <sprite>sprites\s_edges</sprite>
     <sprite>sprites\s_edgew</sprite>
-    <sprite>sprites\s_face</sprite>
-    <sprite>sprites\s_red</sprite>
     <sprites name="placeholder sprites (aang)">
       <sprite>sprites\s_hudaang</sprite>
       <sprite>sprites\s_aangstand</sprite>
@@ -27,15 +24,9 @@
     <sprite>sprites\s_grass</sprite>
     <sprite>sprites\s_cliff</sprite>
   </sprites>
-  <backgrounds name="background">
-    <background>background\bg_skyred</background>
-    <background>background\bg_skywhite</background>
-    <background>background\bg_skynight</background>
-  </backgrounds>
+  <backgrounds name="background"/>
   <paths name="paths"/>
-  <scripts name="scripts">
-    <script>scripts\model_punchingbag_create.gml</script>
-  </scripts>
+  <scripts name="scripts"/>
   <fonts name="fonts">
     <font>fonts\ft_def</font>
     <font>fonts\ft_debug</font>
@@ -43,7 +34,6 @@
   <objects name="objects">
     <object>objects\control</object>
     <object>objects\o_particle_bubbles</object>
-    <object>objects\o_camera</object>
     <object>objects\o_player</object>
     <object>objects\o_npc</object>
     <objects name="enemies">
@@ -54,7 +44,6 @@
     <objects name="solids">
       <object>objects\parent_solid_pathfinding</object>
       <object>objects\parent_solid</object>
-      <object>objects\parent_wall</object>
       <object>objects\o_wall</object>
       <object>objects\o_floor</object>
     </objects>
