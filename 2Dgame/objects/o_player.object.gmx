@@ -30,6 +30,9 @@
 x=x;
 y=y;
 
+damage=10;
+knockback=20;
+
 controllable=true;
 attackable=true;
 
@@ -120,7 +123,7 @@ num = instance_number(parent_enemy);
         if instance_exists(ID){
             if collision_circle(ID.x+lengthdir_x(16,ID.dir_face),ID.y+lengthdir_y(16,ID.dir_face),32,self,false,false){
                 if(ID.state==1){
-                    hp-=5;
+                    hp-=ID.damage;
                     hp=clamp(hp,0,100);
                     if hp&lt;=0 { state=3; soffset=0; }
                     else { state=2; soffset=0; }
@@ -202,16 +205,15 @@ if instance_exists(parent_enemy) {
     if point_distance(instance_nearest(x,y,parent_enemy).x,instance_nearest(x,y,parent_enemy).y,x,y)&lt;512 { stance=s_aangstance; }
 }
 
-var dir=270;
 if spritestate==0{ // Standing
     sprite_index=stance;
-    image_index= floor((((dir-facedir)+300)%360)/45);
+    image_index= floor((facedir)/45);
     soffset=0; smin=0;
 }
 else if spritestate==1{ // Walking
     sprite_index=s_aangwalk;
     
-    smin=floor((((dir-facedir+270)%360)/45))*8;
+    smin=floor((facedir)/45)*8;
     image_index=soffset+smin;
     
     soffset+=(6/room_speed); //I calculate the frame to use by hand so that when the sprite changes to running or a new angle
@@ -220,7 +222,7 @@ else if spritestate==1{ // Walking
 else if spritestate==2{ // Running
     sprite_index=s_aangrun;
     
-    smin=floor((((dir-facedir+270)%360)/45))*8;
+    smin=floor((facedir)/45)*8;
     image_index=soffset+smin;
     
     soffset+=(8/room_speed);
@@ -230,7 +232,7 @@ else if spritestate==3{ // Attacking
  // PLACEHOLDER so Aang doesn't vanish
     sprite_index=s_aangblock;
     
-    smin=floor((((dir-facedir+300)%360)/45));
+    smin=floor((facedir)/45);
     image_index=soffset+smin;
     
     soffset+=(2/room_speed);
@@ -241,7 +243,7 @@ else if spritestate==3{ // Attacking
 else if spritestate==4{ // Hit
     sprite_index=s_aanghit;
     
-    smin=floor((((dir-facedir+270)%360)/45))*5;
+    smin=floor((facedir)/45)*5;
     image_index=soffset+smin;
     
     soffset+=(8/room_speed);
@@ -250,7 +252,7 @@ else if spritestate==4{ // Hit
 else if spritestate==6{ // Get Up
     sprite_index=s_aanggetup;
     
-    smin=floor((((dir-facedir+270)%360)/45))*9;
+    smin=floor((facedir)/45)*9;
     image_index=soffset+smin;
     
     soffset+=(8/room_speed);
@@ -265,7 +267,7 @@ if keyboard_check_pressed(ord('2')){instance_create(128,128,o_attackingbag);}
 if spritestate==5{ // Die
     sprite_index=s_aangdie;
     
-    smin=floor((((dir-facedir+270)%360)/45))*6;
+    smin=floor((facedir)/45)*6;
     image_index=soffset+smin;
     
     soffset+=(8/room_speed);

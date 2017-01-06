@@ -25,23 +25,28 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>dir_face=0;
+            <string>hp=100;
+
+damage=10; // Amount to damage the player (out of 100)
+knockback=10; // Amount to knock back the player (in px)
+
+dir_face=0; //Direction facing on xy plane (in degrees)
 
 state=0;
     // 0 - normal movement
     // 1 - attack
     // 2 - hit
     // 3 - dead
-movedir=-1;
-disttime=0;
-distmove=0;
+    
+attackable=true; // Enemy is hit only once per player attack
 
-hp=100;
+mppath=path_add(); // Motion Planning path
+movedir=-1; // Direction to move (in degrees, -1 is no movement)
+spd=2; // Amount of pixels to move in a step
 
-//hit
-cooldown=0;
-//attack
-windup=0;
+hit=0; // Used to time out how long to be in the "hit" state (Affected by enemy knockback)
+attack=0; // Used to time out how long to be in the "attack" state (Affected by player knockback)
+windup=0; // Used to time out how long to wind up an attack
 
 image_speed=0;
 image_index=1;
@@ -50,7 +55,7 @@ image_index=1;
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="1" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -67,42 +72,77 @@ image_index=1;
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>if path_exists(mppath) path_delete(mppath);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>other</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string> if !control.pause{
 
-var canSee=!collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true);
-show_debug_message(collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true));
-if keyboard_check(vk_backspace) {
-    if instance_exists(collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true)) 
-    with (collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,false,true)) { instance_destroy(); }
-}
+var canSee=!collision_line(x,y,o_player.x,o_player.y,parent_solid_pathfinding,false,true);
+
+if o_player.state!=1 attackable=true;
 
 if state==0{ //normal movement
     // detect if hit
     if distance_to_object(o_player)&lt;=64{
-        if o_player.state==1{
+        
+        if o_player.state==1 and attackable==true{
             if collision_circle(o_player.x+lengthdir_x(16,o_player.facedir),o_player.y+lengthdir_y(16,o_player.facedir),16,self,false,false){ //If the enemy got hit
-                hp-=10;
-                lean=0;
-                if hp&lt;=0 {state=3; lean=45; movedist=4; movetime=4;}
-                else {state=2; lean=30; movedist=2;movetime=2;}
+                state=2; //Hit
+                attackable=false;
+                
+                hp -= o_player.damage;
+                hit = (room_speed/4); // Set the hit cooldown
+                spd = o_player.knockback/hit; // How many pixels to move in a fourth of a second
                 movedir=point_direction(o_player.x,o_player.y,x,y);
+                
+                if (hp&lt;=0) state=3; //Dead
             }
         }
-        if state==0 { //If the enemy didn't get hit
-            movedir=-1; //Stop pathfinding
-            movedist=0;
-                
+        if state==0 { // If the enemy didn't get hit
+            movedir=-1; // Stop pathfinding
+            spd=0; // No pixels per frame
+                           
             windup++;
             if windup&gt;(room_speed*2){
-                state=1; lean=-30; movedist=4; movetime=2; //attacking
+                state=1; //Attack
+                
+                attack = (room_speed/4);
+                spd = knockback/attack;
+                movedir=point_direction(x,y,o_player.x,o_player.y);
             }
         }
     }
-    else { //Player out of range and behind a solid   //if distance_to_object(o_player)&gt;64{
+    else { //Player out of range //if distance_to_object(o_player)&gt;64{
         windup=0;
-        lean=-1;
-        movedir=point_direction(x,y,o_player.x,o_player.y);
-        movedist=1.5; movetime=1.5;
+        
+        if canSee{
+            movedir=point_direction(x,y,o_player.x,o_player.y);
+            spd=1.5;
+        }
+        else{
+            mp_grid_path(control.mpgrid,mppath,x,y,o_player.x,o_player.y,true);
+            if path_index!=-1 path_end();
+        }
     }
     
     // face player
@@ -112,44 +152,46 @@ if state==0{ //normal movement
     
 }
 else if state==1{ //attack
+    windup=0;
     movedir=point_direction(x,y,o_player.x,o_player.y);
+    
+    attack--;
+    if attack==0{ // If the attack animation has played for the full duration second
+        movedir=-1;
+        state=0;
+    }
 }
 else if state==2{ //hit
+    windup=0;
+    
+    hit--;
+    if hit==0{ // If the hit animation has played for the full duration second
+        movedir=-1;
+        state=0;
+    }
+
 }
 if state==3{ //dead
     windup=0;
     
-    cooldown++;
-    if cooldown&gt;(room_speed/movetime){ // If the hit animation has played for 1/2 second
+    hit--;
+    if hit==0{ // If the hit animation has played for the full duration second
         instance_destroy();
     }
     else{
-        image_alpha-=(2/room_speed);
-        lean=lerp(lean,90,1/(room_speed/2));
+        image_alpha-=(spd/room_speed);
     }
 }
 
 //Collision Checking
 if (movedir!=-1){
 
-    if state==1 or state==2{
-        windup=0;
-    
-        cooldown++;
-        if cooldown&gt;(room_speed/(6-movetime)){ // If the attack animation has played for 1/movetime second
-            movedir=-1;
-            state=0;
-            cooldown=0;
-            movedist=0;
-        }
-    }
-
-    var dist = lerp(movedist,0,(cooldown/(room_speed/(6-movetime))));
+    //var dist = lerp(movedist,0,(cooldown/(room_speed/(6-movetime))));
     //x+=lengthdir_x(dist,movedir);
     //y+=lengthdir_y(dist,movedir);
                                 
     if lengthdir_y(1,movedir)!=0 {
-        if collision_rectangle(x-8,y-8+lengthdir_y(dist,movedir),x+8,y+8+lengthdir_y(dist,movedir),parent_solid,false,true) or collision_rectangle(x-8,y-8+lengthdir_y(dist,movedir),x+8,y+8+lengthdir_y(dist,movedir),o_player,false,true) {
+        if collision_rectangle(x-8,y-8+lengthdir_y(spd,movedir),x+8,y+8+lengthdir_y(spd,movedir),parent_solid,false,true) or collision_rectangle(x-8,y-8+lengthdir_y(spd,movedir),x+8,y+8+lengthdir_y(spd,movedir),o_player,false,true) {
             if lengthdir_y(1,movedir)&gt;0 {
                 while (!collision_rectangle(x-8,y-7,x+8,y+9,parent_solid,false,true) and !collision_rectangle(x-8,y-7,x+8,y+9,o_player,false,true)){ 
                     y++;
@@ -161,11 +203,11 @@ if (movedir!=-1){
                 }
             }
         }
-        else y+=lengthdir_y(dist,movedir);
+        else y+=lengthdir_y(spd,movedir);
     }
     
     if lengthdir_x(1,movedir)!=0 {
-        if collision_rectangle(x-8+lengthdir_x(dist,movedir),y-8,x+8+lengthdir_x(dist,movedir),y+8,parent_solid,false,true) or collision_rectangle(x-8+lengthdir_x(dist,movedir),y-8,x+8+lengthdir_x(dist,movedir),y+8,o_player,false,true) {
+        if collision_rectangle(x-8+lengthdir_x(spd,movedir),y-8,x+8+lengthdir_x(spd,movedir),y+8,parent_solid,false,true) or collision_rectangle(x-8+lengthdir_x(spd,movedir),y-8,x+8+lengthdir_x(spd,movedir),y+8,o_player,false,true) {
             if lengthdir_x(1,movedir)&gt;0 {
                 while (!collision_rectangle(x-7,y-8,x+9,y+8,parent_solid,false,true) and !collision_rectangle(x-7,y-8,x+9,y+8,o_player,false,true)){ 
                     x++;
@@ -177,7 +219,7 @@ if (movedir!=-1){
                 }
             }
         }
-        else x+=lengthdir_x(dist,movedir);
+        else x+=lengthdir_x(spd,movedir);
     }                                    
 }
 
@@ -204,30 +246,30 @@ if (movedir!=-1){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if state==3 {draw_set_alpha(image_alpha);}
+            <string>draw_path(mppath,x,y,false);
+
+if state==3 {draw_set_alpha(image_alpha);}
 draw_self();
 draw_set_alpha(1);
 
 if state!=3{    
+
     draw_set_color(c_black);
-    draw_rectangle(x-8,x-48,x+8,x-46,false); //Healthbar Underlay
-    
+    draw_rectangle(x-8,y-48,x+8,y-46,false); //Healthbar Underlay
     draw_set_color(make_color_rgb(255*(clamp(abs((hp/50)-2),0,1)),255*(clamp(hp/50,0,1)),0));
-    
-    draw_rectangle(x-8,x-48,x+((16*(hp/100))-8),x-46,false); //Health
-    
+    draw_rectangle(x-8,y-48,x+(16*(hp/100))-8,y-46,false); //Health
     draw_set_color(c_white);
     
-    draw_rectangle(x-8,x-54,x+((16*(windup/(room_speed*2)))-8),x+2-54,false); //Windup
+    draw_rectangle(x-8,y-54,x+(16*(windup/(room_speed*2)))-8,y-52,false); //Windup
     
-    if state==1 draw_set_color(c_red);
-    if collision_line(x,x,o_player.x,o_player.y,parent_solid_pathfinding,true,true) draw_set_color(c_red);
+    if collision_line(x,y,o_player.x,o_player.y,parent_solid_pathfinding,true,true) draw_set_color(c_red);
     draw_line(x,y,o_player.x,o_player.y);
     draw_set_color(c_white);
-    //draw_path(mppath,x,y,false);
-    draw_circle(lengthdir_x(16,dir_face),lengthdir_y(16,dir_face),32,true);
+   
+    if state==1 draw_set_color(c_red);
+    draw_circle(x+lengthdir_x(16,dir_face),y+lengthdir_y(16,dir_face),32,true);
+    draw_set_color(c_white);
 }
-
 </string>
           </argument>
         </arguments>
