@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackWeapon : MonoBehaviour {
+public class PlayerCombat : MonoBehaviour {
 
 	public CombatStat stats;
 
@@ -26,10 +26,12 @@ public class AttackWeapon : MonoBehaviour {
 	}
 
 	void OnTriggerEnter (Collider other){
-		if (other.CompareTag ("enemy")) {
-			//if (other.gameObject.CombatStats.isAttacking) {
-				//stats.health -= other.gameObject.CombatStats.dmgCalc();
-			//}
+		if (stats.isAttackable) {
+			if (other.CompareTag ("enemy")) {
+				if (other.gameObject.GetComponent<EnemyCombat> ().stats.isAttacking) {
+					stats.health -= other.gameObject.GetComponent<EnemyCombat> ().stats.dmgCalc ();
+				}
+			}
 		}
 		if (rightWeapon==null) {
 			if (other.CompareTag ("weapon") & other.gameObject.transform!=leftWeapon) {

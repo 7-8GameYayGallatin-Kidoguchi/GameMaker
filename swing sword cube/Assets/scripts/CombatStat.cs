@@ -20,9 +20,11 @@ public class CombatStat : System.Object {
 
 	public float dmgCalc(){
 		float hit = (dmgBase + Random.Range(-dmgRange,dmgRange));	//hit is the dmgBase modified by a random amount within the range of dmgRange 
-		if (Random.Range(1f,critChance) == critChance) {				//roll a [critChange] sided die, if you get the max:
+		if (Mathf.Ceil(Random.Range(1f,critChance)) == critChance) {				//roll a [critChange] sided die, if you get the max:
 				hit = hit * critPower;								//multiply previous hit amount by critPower
 		}															//Knockback is dmgBase
+		hit = Mathf.Floor(hit);
+		Debug.Log(hit);
 		return hit;
 	}
 
