@@ -8,8 +8,10 @@ public class SphereRot : MonoBehaviour {
 
 	public float Speed;
 
+	private Rigidbody rb;
+
 	private float xMove;
-	private float yMove;
+	private float zMove;
 
 	private float SunDirection;
 
@@ -21,25 +23,26 @@ public class SphereRot : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		rb = GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		xMove = 0;
-		yMove = 0;
+		zMove = 0;
 		if (Input.GetAxis ("Horizontal") != 0 || Input.GetAxis ("Vertical") != 0) {
-			print ("Movement!");
 
-			xMove = Input.GetAxis ("Horizontal") * Speed * Time.deltaTime;
-			yMove = Input.GetAxis ("Vertical") * Speed * Time.deltaTime;
+			xMove = Input.GetAxis ("Horizontal");
+			zMove = Input.GetAxis ("Vertical");
 
-			transform.position = Vector3.MoveTowards (transform.position, new Vector3 (transform.position.x + xMove, transform.position.y, transform.position.z + yMove), Speed*Time.deltaTime);
+			//Terrain.activeTerrain.SampleHeight(transform.position)+.5f
+			//transform.position = Vector3.MoveTowards (transform.position, new Vector3 (transform.position.x + xMove, transform.position.y, transform.position.z + zMove), Speed);
 
-			transform.Rotate(yMove*100, 0, xMove*-100, 0);
+			Vector3 movement = new Vector3 (xMove, 0.0f, zMove);
+			rb.AddForce (movement * (Speed*Time.deltaTime), ForceMode.VelocityChange);
 
-		} else {
-			print ("No Movement.");
+			//transform.Rotate(new Vector3(zMove, 0f, xMove));
+
 		}
 
 		SunDirection = SunDirection+.05f;
