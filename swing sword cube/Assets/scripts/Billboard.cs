@@ -12,6 +12,6 @@ public class Billboard : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		gameObject.transform.LookAt (Camera.main.transform.position);
-		gameObject.transform.Rotate (0, 180, 0);
+		//gameObject.transform.Rotate (0, 180, 0);
 	}
 }

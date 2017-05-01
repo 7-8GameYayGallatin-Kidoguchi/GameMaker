@@ -28,4 +28,8 @@ public class CombatStat : System.Object {
 		return hit;
 	}
 
+	public void applyDmg(float dmg){
+		health -= dmg;
+	}
+
 }
