@@ -47,8 +47,11 @@ public class CharacterMove : MonoBehaviour {
 		//Character Orientation
 		if (strafeMove != 0 || forwardMove != 0) { //Character faces the direction it moves relative to the camera
 
-			Quaternion angle = Quaternion.LookRotation (new Vector3 (speed.x, 0, speed.z), Vector3.up);
-			character.transform.rotation = angle;
+			Vector3 check = new Vector3 (speed.x, 0, speed.z);
+			if (check != Vector3.zero) {
+				Quaternion angle = Quaternion.LookRotation (check, Vector3.up);
+				character.transform.rotation = angle;
+			}
 
 			animator.SetBool ("isWalking", true);
 			animator.speed = movementSpeed * .4f;

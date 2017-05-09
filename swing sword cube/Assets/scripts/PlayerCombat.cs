@@ -12,7 +12,8 @@ public class PlayerCombat : MonoBehaviour {
 	public Transform leftHand;
 	public Transform leftWeapon;
 
-	public GameObject healthbar;
+	public RectTransform healthbar;
+	public RectTransform staminabar;
 
 	static Animator anim;
 
@@ -21,24 +22,30 @@ public class PlayerCombat : MonoBehaviour {
 	public SphereCollider hitbox;
 	List<GameObject>targettable = new List<GameObject>();
 
+	private float staminaregen;
+
 	// Use this for initialization
 	void Start () {
 		stats.health = stats.maxHealth;
+		stats.stamina = stats.maxStamina;
 		anim = GetComponent<Animator> ();
 		hitbox = GetComponent<SphereCollider> ();
+
 	}
 
 	void OnTriggerExit (Collider other){
+		Debug.Log ("goodbye, "+other.ToString());
 		if (other.CompareTag ("enemy")) {
 			targettable.Remove (other.gameObject);
-			Debug.Log ("removed");
+			Debug.Log ("removed "+other.ToString());
 		}
 	}
 
 	void OnTriggerEnter (Collider other){
+		Debug.Log ("hello, "+other.ToString());
 		if (other.CompareTag ("enemy")) {
 			targettable.Add (other.gameObject);
-			Debug.Log ("added");
+			Debug.Log ("added "+other.ToString());
 		}
 		//if (stats.isAttackable) {
 			//if (other.CompareTag ("enemy")) {
@@ -69,24 +76,40 @@ public class PlayerCombat : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+		healthbar.sizeDelta = new Vector2(200*(stats.health/stats.maxHealth), 20);
+		staminabar.sizeDelta = new Vector2(300*(stats.stamina/stats.maxStamina), 20);
 		
 		if (Input.GetButtonDown ("Fire2")) {
-			//anim.SetTrigger ("isAttackingLeft");
-			//stats.isAttacking = true;
-			//Invoke("StopAttacking",.5f);
-			if (leftWeapon != null) {
-				Melee (leftWeapon.GetComponent<axe_control> ().stats);
-			} else {
-				Melee (stats);
+			if (stats.stamina != 0) {
+				staminaregen = 0;
+				//anim.SetTrigger ("isAttackingLeft");
+				//stats.isAttacking = true;
+				//Invoke("StopAttacking",.5f);
+				if (leftWeapon != null) {
+					Melee (leftWeapon.GetComponent<axe_control> ().stats);
+				} else {
+					Melee (stats);
+				}
 			}
 
-		}
-		if (Input.GetButtonDown ("Fire1")) {
-			//anim.SetTrigger ("isAttackingRight");
-			if (rightWeapon != null) {
-				Melee (rightWeapon.GetComponent<axe_control> ().stats);
+		} else if (Input.GetButtonDown ("Fire1")) {
+			if (stats.stamina != 0) {
+				staminaregen = 0;
+				//anim.SetTrigger ("isAttackingRight");
+				if (rightWeapon != null) {
+					Melee (rightWeapon.GetComponent<axe_control> ().stats);
+				} else {
+					Melee (stats);
+				}
+			}
+		} else {
+			if (staminaregen < 120) {
+				staminaregen++;
 			} else {
-				Melee (stats);
+				if (stats.stamina < stats.maxStamina) {
+					stats.stamina++;
+				}
 			}
 		}
 
@@ -113,6 +136,7 @@ public class PlayerCombat : MonoBehaviour {
 					targettable [i].GetComponent <EnemyCombat> ().stats.applyDmg (dmg);
 					Vector3 textpos = transform.position;
 					textpos.y+=2f;
+					stats.stamina -= attackStat.weight;
 					Instantiate (textOutline, textpos, Quaternion.identity).GetComponent<textFloat> ().text = dmg.ToString ();
 				}
 			}

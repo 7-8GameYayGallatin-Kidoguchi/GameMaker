@@ -6,8 +6,11 @@ public class CombatStat : System.Object {
 	[Header("Health Modifiers")]
 	public float maxHealth = 0f;
 	public float health = 0f;
+	public float maxStamina = 0f;
+	public float stamina = 0f;
 
 	[Header("Damage Modifiers")]
+	public float weight = 0f; // Amount to reduce stamina by on attack
 	public float dmgBase = 0f; // Power - Damage base , also Knockback base
 	public float dmgRange = 0f; // Control - Damage range
 	public float critChance = 0f; // Reliability - Chance to multiply by critPower

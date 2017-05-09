@@ -11,6 +11,8 @@ public class EnemyCombat : MonoBehaviour {
 
 	public GameObject target;
 
+
+
 	// Use this for initialization
 	void Start () {
 		stats.health = stats.maxHealth;
@@ -62,5 +64,18 @@ public class EnemyCombat : MonoBehaviour {
 			}
 		}
 	}
+
+	void OnGUI()
+	{
+		if (stats.health > 0f) {
+			Vector2 targetPos;
+			targetPos = Camera.main.WorldToScreenPoint (transform.position);
+			targetPos = new Vector2 (targetPos.x-25, targetPos.y+50);
+
+			GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, stats.maxHealth, 20), (stats.health.ToString () + "/" + stats.maxHealth.ToString ()));
+			GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, stats.health, 20), "");
+		}
+	}
+
 
 }
